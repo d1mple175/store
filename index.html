@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>JualBaju | Premium Streetwear Store</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="favicon.ico?v=2">
+  <link rel="icon" type="image/png" href="favicon.png?v=2">
+  
+  <!-- Google Fonts & Font Awesome -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ========== LOADING ANIMATION ========== -->
+<div id="loadingOverlay" class="loading-overlay">
+  <div class="loading-container">
+    <div class="loading-ring">
+      <div></div><div></div><div></div><div></div>
+    </div>
+    <div class="loading-logo">JB</div>
+    <div class="loading-bar">
+      <div class="loading-progress"></div>
+    </div>
+    <p class="loading-text">Loading premium collection...</p>
+    <p class="loading-percent" id="loadingPercent">0%</p>
+  </div>
+</div>
+
+<header>
+  <div class="container header-inner">
+    <div class="logo">
+      <h1>Jual<span>Baju</span></h1>
+      <span class="logo-tag">PREMIUM STREETWEAR</span>
+    </div>
+    <div class="search-wrapper">
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInput" placeholder="Cari baju..." autocomplete="off">
+        <button id="searchBtn">Cari</button>
+      </div>
+      <div id="searchSuggestions" class="search-suggestions"></div>
+    </div>
+    <div class="header-actions">
+      <div class="about-icon-wrapper" id="aboutBtn">
+        <i class="fas fa-info-circle"></i>
+        <span class="about-tooltip">About</span>
+      </div>
+      <i class="far fa-heart" id="wishlistIconBtn"></i>
+      <i class="far fa-user"></i>
+      <div class="cart-icon-wrapper">
+        <i class="fas fa-store"></i>
+        <span class="cart-count" id="productCount">0</span>
+      </div>
+      <button id="darkModeToggle" class="dark-mode-toggle">
+        <i class="fas fa-moon"></i>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+    <div class="hero-banner">
+      <div class="hero-text">
+        <span class="hero-badge">TIKTOK SHOP AFFILIATE</span>
+        <h2>STREETWEAR <br>PREMIUM</h2>
+        <p>Klik pada produk → Lihat detail → Beli di TikTok</p>
+      </div>
+    </div>
+
+    <!-- ========== BREADCRUMB NAVIGATION ========== -->
+    <div class="breadcrumb" id="breadcrumb">
+      <a href="#" onclick="resetFilters(); return false;">Home</a>
+      <i class="fas fa-chevron-right"></i>
+      <span id="breadcrumbCategory">All Collection</span>
+      <i class="fas fa-chevron-right" id="breadcrumbProductIcon" style="display: none;"></i>
+      <span id="breadcrumbProduct" style="display: none;"></span>
+    </div>
+
+    <!-- ========== COUNTDOWN SALE ========== -->
+    <div id="countdownBar" class="countdown-bar">
+      <div class="countdown-container">
+        <i class="fas fa-bolt"></i>
+        <span class="countdown-label">FLASH SALE BERAKHIR DALAM:</span>
+        <div class="countdown-timer" id="countdownTimer">
+          <span><span id="hours">00</span>j</span>
+          <span><span id="minutes">00</span>m</span>
+          <span><span id="seconds">00</span>s</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== LOYALTY POINTS / REFERRAL SYSTEM ========== -->
+    <div id="loyaltyPanel" class="loyalty-panel">
+      <div class="loyalty-icon">
+        <i class="fas fa-gem"></i>
+        <span class="loyalty-points" id="loyaltyPoints">0</span>
+      </div>
+      <div class="loyalty-info">
+        <h4>Rewards Points</h4>
+        <p>Klik "Beli" dapat <strong>10 points</strong> setiap transaksi!</p>
+      </div>
+      <button id="redeemPointsBtn" class="redeem-btn">Redeem</button>
+    </div>
+
+    <div class="filter-bar">
+      <div class="category-chips">
+        <div class="chip active" data-cat="all">SEMUA 🧢</div>
+        <div class="chip" data-cat="Oversize Tshirt">OVERSIZE</div>
+        <div class="chip" data-cat="Polo Shirt">POLO</div>
+        <div class="chip" data-cat="Jeans">JEANS</div>
+        <div class="chip" data-cat="Hoodie">HOODIE</div>
+      </div>
+      <div class="filter-right">
+        <div class="sort-wrapper">
+          <select id="sortSelect" class="sort-select">
+            <option value="default">Susun Mengikut</option>
+            <option value="price-asc">Harga: Rendah ke Tinggi</option>
+            <option value="price-desc">Harga: Tinggi ke Rendah</option>
+            <option value="name-asc">Nama: A ke Z</option>
+            <option value="name-desc">Nama: Z ke A</option>
+            <option value="discount">Diskaun Terbesar</option>
+          </select>
+        </div>
+        <div class="result-count" id="resultCountText">Menunjukkan semua produk</div>
+      </div>
+    </div>
+
+    <div class="products-grid" id="productsContainer"></div>
+
+    <!-- ========== RECENTLY VIEWED ========== -->
+    <div id="recentlyViewedSection" class="recently-viewed-section" style="display: none;">
+      <h3 class="section-title"><i class="fas fa-clock"></i> Baru Dilihat</h3>
+      <div class="recently-viewed-grid" id="recentlyViewedContainer"></div>
+    </div>
+
+    <!-- ========== NEWSLETTER ========== -->
+    <div class="newsletter-section">
+      <div class="newsletter-content">
+        <i class="fas fa-envelope-open-text"></i>
+        <h3>Dapatkan Promo Terkini!</h3>
+        <p>Langgan newsletter untuk dapatkan diskaun eksklusif dan info produk terbaru.</p>
+        <form id="newsletterForm" class="newsletter-form">
+          <input type="email" placeholder="Email anda" required>
+          <button type="submit">Langgan</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-logo">
+        <h3>Jual<span>Baju</span></h3>
+        <p>Premium Streetwear Since 2025</p>
+      </div>
+      <div class="footer-links">
+        <a href="#">Tentang Kami</a>
+        <a href="#">Kebijakan Privasi</a>
+        <a href="#">Hubungi Kami</a>
+      </div>
+      <div class="footer-social">
+        <i class="fab fa-instagram"></i>
+        <i class="fab fa-tiktok"></i>
+        <i class="fab fa-whatsapp"></i>
+        <i class="fab fa-telegram"></i>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 JualBaju — TikTok Affiliate Store</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ========== MODAL POPUP SLIDER ========== -->
+<div id="productModal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal">&times;</span>
+    
+    <div class="modal-slider-container">
+      <div class="slider-wrapper">
+        <div class="slider-images" id="sliderImages"></div>
+      </div>
+      <button class="slider-btn prev-btn" id="prevBtn"><i class="fas fa-chevron-left"></i></button>
+      <button class="slider-btn next-btn" id="nextBtn"><i class="fas fa-chevron-right"></i></button>
+      <div class="slider-dots" id="sliderDots"></div>
+    </div>
+    
+    <div class="modal-info">
+      <div class="modal-category" id="modalCategory"></div>
+      <h2 class="modal-title" id="modalTitle"></h2>
+      <div class="modal-rating" id="modalRating"></div>
+      <div class="modal-price-wrapper">
+        <span class="modal-original-price" id="modalOriginalPrice"></span>
+        <span class="modal-final-price" id="modalFinalPrice"></span>
+      </div>
+      <div class="modal-discount" id="modalDiscount"></div>
+      <p class="modal-description" id="modalDescription"></p>
+      <div class="modal-share">
+        <span>Share:</span>
+        <i class="fab fa-whatsapp" id="shareWhatsapp"></i>
+        <i class="fab fa-telegram" id="shareTelegram"></i>
+        <i class="fab fa-tiktok" id="shareTiktok"></i>
+      </div>
+      <button class="modal-buy-btn" id="modalBuyBtn">
+        <i class="fab fa-tiktok"></i> Beli di TikTok Shop
+      </button>
+      <p class="modal-note">* Anda akan diarahkan ke TikTok untuk pembelian</p>
+    </div>
+  </div>
+</div>
+
+<!-- ========== ABOUT MODAL ========== -->
+<div id="aboutModal" class="about-modal">
+  <div class="about-modal-content">
+    <span class="close-about-modal">&times;</span>
+    <div class="about-modal-header">
+      <i class="fas fa-store"></i>
+      <h2>About This Website</h2>
+    </div>
+    <div class="about-modal-body">
+      <p><strong>This website is a <span class="highlight">DISPLAY ONLY</span> platform.</strong></p>
+      
+      <div class="about-info-box">
+        <i class="fas fa-eye"></i>
+        <div>
+          <h3>Product Showcase</h3>
+          <p>All products shown here are for preview and display purposes only.</p>
+        </div>
+      </div>
+      
+      <div class="about-info-box">
+        <i class="fab fa-tiktok"></i>
+        <div>
+          <h3>Purchase via TikTok Shop</h3>
+          <p>When you click the <strong>"Beli di TikTok Shop"</strong> button, you will be redirected to TikTok to complete your purchase.</p>
+        </div>
+      </div>
+      
+      <div class="about-info-box">
+        <i class="fas fa-link"></i>
+        <div>
+          <h3>Affiliate Links</h3>
+          <p>All purchase links are affiliate links that direct you to the official TikTok Shop product page.</p>
+        </div>
+      </div>
+      
+      <div class="about-note">
+        <i class="fas fa-shield-alt"></i>
+        <p>We do not process payments or handle shipping directly. All transactions are securely handled by TikTok Shop.</p>
+      </div>
+    </div>
+    <div class="about-modal-footer">
+      <button class="about-gotit-btn" id="closeAboutBtn">Got it! 👍</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== BACK TO TOP BUTTON ========== -->
+<button id="backToTop" class="back-to-top">
+  <i class="fas fa-arrow-up"></i>
+</button>
+
+<!-- ========== TOAST NOTIFICATION ========== -->
+<div id="toastNotification" class="toast-notification"></div>
+
+<!-- ========== COOKIE CONSENT / GDPR ========== -->
+<div id="cookieConsent" class="cookie-consent">
+  <div class="cookie-content">
+    <i class="fas fa-cookie-bite"></i>
+    <div class="cookie-text">
+      <h4>🍪 Cookie Consent</h4>
+      <p>Kami menggunakan cookie untuk meningkatkan pengalaman anda. Dengan meneruskan, anda bersetuju dengan <a href="#">Dasar Cookie</a> kami.</p>
+    </div>
+    <div class="cookie-buttons">
+      <button id="acceptCookies" class="cookie-accept">Accept</button>
+      <button id="declineCookies" class="cookie-decline">Decline</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ========== DATA PRODUK ==========
+  const products = [
+    { id: 1, name: "LVP - Boxy Oversize Tshirt - White Statement", category: "Oversize Tshirt", price: 279000, discount: 21, priceAfter: 219000, imageIcon: "⚪", images: ["⚪", "👕", "⭐"], description: "Boxy oversize tshirt dengan bahan cotton premium. Sesuai untuk streetwear harian. Available size S-XXL.", affiliateLink: "https://vt.tiktok.com/your-affiliate-link-1", rating: 4.5 },
+    { id: 2, name: "LVP - Boxy Oversize Tshirt - Black Statement", category: "Oversize Tshirt", price: 279000, discount: 21, priceAfter: 219000, imageIcon: "⚫", images: ["⚫", "🖤", "🔥"], description: "Boxy oversize tshirt hitam dengan printing bold statement. Bahan adem dan tidak mudah luntur.", affiliateLink: "https://vt.tiktok.com/your-affiliate-link-2", rating: 4.8 },
+    { id: 3, name: "LVP - Polo Shirt - White Velocity", category: "Polo Shirt", price: 349000, discount: 20, priceAfter: 279000, imageIcon: "👕", images: ["👕", "⚪", "✨"], description: "Polo shirt premium dengan bahan pique cotton. Ringan dan breathable. Cocok untuk casual atau semi formal.", affiliateLink: "https://vt.tiktok.com/your-affiliate-link-3", rating: 4.3 },
+    { id: 4, name: "LVP - Polo Shirt - Black Velocity", category: "Polo Shirt", price: 349000, discount: 20, priceAfter: 279000, imageIcon: "🖤", images: ["🖤", "👕", "🌙"], description: "Polo shirt hitam elegan dengan detail embroidery logo. Tersedia warna hitam, navy, dan maroon.", affiliateLink: "https://vt.tiktok.com/your-affiliate-link-4", rating: 4.6 },
+    { id: 5, name: "LVP - Polo Shirt - Red Velocity", category: "Polo Shirt", price: 349000, discount: 20, priceAfter: 279000, imageIcon: "❤️", images: ["❤️", "👕", "🎯"], description: "Polo shirt merah berani untuk statement fashion anda. Bahan quick dry, nyaman dipakai seharian.", affiliateLink: "https://vt.tiktok.com/your-affiliate-link-5", rating: 4.4 },
+    { id: 6, name: "LVP - Baggy Jeans - Utility Pants", category: "Jeans", price: 499000, discount: 16, priceAfter: 419000, imageIcon: "👖", images: ["👖", "🟤", "⭐"], description: "Baggy jeans utility dengan banyak pocket. Model kekinian untuk streetwear look.", affiliateLink: "https://vt.tiktok.com/your-affiliate-link-6", rating: 4.7 },
+    { id: 7, name: "LVP - Longsleeve Waffle - Grid", category: "Oversize Tshirt", price: 469000, discount: 25, priceAfter: 349000, imageIcon: "🧥", images: ["🧥", "📐", "🌫️"], description: "Longsleeve waffle texture dengan corak grid. Hangat dan stylish untuk cuaca sejuk.", affiliateLink: "https://vt.tiktok.com/your-affiliate-link-7", rating: 4.2 },
+    { id: 8, name: "LVP - Hoodie Zipper Boxy - Neavy Duty", category: "Hoodie", price: 499000, discount: 16, priceAfter: 419000, imageIcon: "🔥", images: ["🔥", "🧥", "💪"], description: "Hoodie zipper boxy dengan bahan heavy duty tebal. Nyaman dipakai untuk daily activity.", affiliateLink: "https://vt.tiktok.com/your-affiliate-link-8", rating: 4.9 }
+  ];
+
+  // ========== LOADING ANIMATION - CEPAT (0.5 SAAT) ==========
+  let loadingProgress = 0;
+  const loadingOverlay = document.getElementById('loadingOverlay');
+  const loadingPercent = document.getElementById('loadingPercent');
+  const loadingProgressBar = document.querySelector('.loading-progress');
+
+  const loadingInterval = setInterval(() => {
+    loadingProgress += 10;
+    if (loadingPercent) loadingPercent.textContent = Math.min(loadingProgress, 100) + '%';
+    if (loadingProgressBar) loadingProgressBar.style.width = Math.min(loadingProgress, 100) + '%';
+    
+    if (loadingProgress >= 100) {
+      clearInterval(loadingInterval);
+      loadingOverlay.classList.add('fade-out');
+      setTimeout(() => {
+        loadingOverlay.style.display = 'none';
+      }, 300);
+    }
+  }, 50);
+
+  // ========== DARK MODE ==========
+  const darkModeToggle = document.getElementById('darkModeToggle');
+  if (localStorage.getItem('darkMode') === 'enabled') {
+    document.body.classList.add('dark-mode');
+    darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+  }
+  darkModeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    if (document.body.classList.contains('dark-mode')) {
+      localStorage.setItem('darkMode', 'enabled');
+      darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+    } else {
+      localStorage.setItem('darkMode', 'disabled');
+      darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+    }
+  });
+
+  // ========== COUNTDOWN SALE (24 jam dari sekarang) ==========
+  const endTime = new Date().getTime() + (24 * 60 * 60 * 1000);
+  function updateCountdown() {
+    const now = new Date().getTime();
+    const distance = endTime - now;
+    if (distance < 0) {
+      document.getElementById('hours').innerHTML = '00';
+      document.getElementById('minutes').innerHTML = '00';
+      document.getElementById('seconds').innerHTML = '00';
+      return;
+    }
+    const hours = Math.floor((distance % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+    const minutes = Math.floor((distance % (60 * 60 * 1000)) / (60 * 1000));
+    const seconds = Math.floor((distance % (60 * 1000)) / 1000);
+    document.getElementById('hours').innerHTML = String(hours).padStart(2, '0');
+    document.getElementById('minutes').innerHTML = String(minutes).padStart(2, '0');
+    document.getElementById('seconds').innerHTML = String(seconds).padStart(2, '0');
+  }
+  updateCountdown();
+  const countdownInterval = setInterval(updateCountdown, 1000);
+
+  // ========== WISHLIST ==========
+  let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+
+  function saveWishlist() { 
+    localStorage.setItem('wishlist', JSON.stringify(wishlist)); 
+  }
+
+  function toggleWishlist(productId) {
+    const index = wishlist.indexOf(productId);
+    if (index === -1) {
+      wishlist.push(productId);
+      showToast('❤️ Ditambahkan ke wishlist');
+    } else {
+      wishlist.splice(index, 1);
+      showToast('💔 Dikeluarkan dari wishlist');
+    }
+    saveWishlist();
+    renderProducts();
+  }
+
+  // ========== TOAST NOTIFICATION ==========
+  let toastTimeout = null;
+
+  function showToast(message, isError = false) {
+    const toast = document.getElementById('toastNotification');
+    if (!toast) return;
+    
+    if (toastTimeout) clearTimeout(toastTimeout);
+    
+    toast.textContent = message;
+    toast.style.background = isError ? '#ff4444' : '#d4af37';
+    toast.style.color = isError ? '#fff' : '#000';
+    
+    toast.classList.add('show');
+    
+    toastTimeout = setTimeout(() => {
+      toast.classList.remove('show');
+    }, 2500);
+  }
+
+  // ========== RECENTLY VIEWED ==========
+  let recentlyViewed = JSON.parse(localStorage.getItem('recentlyViewed')) || [];
+  
+  function addToRecentlyViewed(product) {
+    recentlyViewed = recentlyViewed.filter(p => p.id !== product.id);
+    recentlyViewed.unshift(product);
+    if (recentlyViewed.length > 4) recentlyViewed.pop();
+    localStorage.setItem('recentlyViewed', JSON.stringify(recentlyViewed));
+    renderRecentlyViewed();
+  }
+  
+  function renderRecentlyViewed() {
+    const section = document.getElementById('recentlyViewedSection');
+    const container = document.getElementById('recentlyViewedContainer');
+    if (!section || !container) return;
+    if (recentlyViewed.length === 0) { 
+      section.style.display = 'none'; 
+      return; 
+    }
+    section.style.display = 'block';
+    container.innerHTML = recentlyViewed.map(p => `
+      <div class="recently-viewed-card" onclick="openModalById(${p.id})">
+        <div class="recent-img">${p.imageIcon}</div>
+        <div class="recent-name">${escapeHtml(p.name.substring(0, 30))}...</div>
+        <div class="recent-price">Rp ${formatPrice(p.priceAfter)}</div>
+      </div>
+    `).join('');
+  }
+
+  // ========== RATING STARS ==========
+  function renderRating(rating) {
+    const fullStars = Math.floor(rating);
+    const halfStar = rating % 1 >= 0.5;
+    let stars = '';
+    for (let i = 0; i < fullStars; i++) stars += '<i class="fas fa-star"></i>';
+    if (halfStar) stars += '<i class="fas fa-star-half-alt"></i>';
+    while (stars.length / 29 < 5) stars += '<i class="far fa-star"></i>';
+    return `<span class="rating-stars">${stars}</span> <span class="rating-number">${rating}</span>`;
+  }
+
+  // ========== SORT FUNCTION ==========
+  function sortProducts(productsArray, sortType) {
+    const sorted = [...productsArray];
+    switch(sortType) {
+      case 'price-asc': return sorted.sort((a, b) => a.priceAfter - b.priceAfter);
+      case 'price-desc': return sorted.sort((a, b) => b.priceAfter - a.priceAfter);
+      case 'name-asc': return sorted.sort((a, b) => a.name.localeCompare(b.name));
+      case 'name-desc': return sorted.sort((a, b) => b.name.localeCompare(a.name));
+      case 'discount': return sorted.sort((a, b) => b.discount - a.discount);
+      default: return sorted;
+    }
+  }
+
+  // ========== SHARE FUNCTIONS ==========
+  function shareProduct(product, platform) {
+    const text = `Check out ${product.name} - Rp ${formatPrice(product.priceAfter)}`;
+    const url = product.affiliateLink;
+    if (platform === 'whatsapp') window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
+    else if (platform === 'telegram') window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank');
+    else if (platform === 'tiktok') navigator.clipboard.writeText(url).then(() => showToast('Link disalin! Buka TikTok dan paste.'));
+  }
+
+  // ========== NEWSLETTER ==========
+  document.getElementById('newsletterForm')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const email = e.target.querySelector('input').value;
+    showToast(`Terima kasih! Promo akan dihantar ke ${email}`);
+    e.target.reset();
+  });
+
+  // ========== BACK TO TOP (SMOOTH) ==========
+  const backToTop = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => backToTop.classList.toggle('show', window.scrollY > 300));
+  backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+  // ========== HELPER FUNCTIONS ==========
+  function formatPrice(price) { return new Intl.NumberFormat('id-ID').format(price); }
+  function escapeHtml(str) { return str.replace(/[&<>]/g, function(m) { return m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;'; }); }
+
+  // ========== BREADCRUMB NAVIGATION ==========
+  function updateBreadcrumb(category, productName = null) {
+    const breadcrumbCategory = document.getElementById('breadcrumbCategory');
+    const breadcrumbProduct = document.getElementById('breadcrumbProduct');
+    const breadcrumbProductIcon = document.getElementById('breadcrumbProductIcon');
+    
+    if (breadcrumbCategory) breadcrumbCategory.textContent = category === 'all' ? 'All Collection' : category;
+    
+    if (productName) {
+      if (breadcrumbProduct) breadcrumbProduct.textContent = productName;
+      if (breadcrumbProduct) breadcrumbProduct.style.display = 'inline';
+      if (breadcrumbProductIcon) breadcrumbProductIcon.style.display = 'inline-flex';
+    } else {
+      if (breadcrumbProduct) breadcrumbProduct.style.display = 'none';
+      if (breadcrumbProductIcon) breadcrumbProductIcon.style.display = 'none';
+    }
+  }
+  
+  window.resetFilters = function() {
+    activeCategory = "all";
+    searchQuery = "";
+    document.getElementById('searchInput').value = '';
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    document.querySelector('.chip[data-cat="all"]').classList.add('active');
+    renderProducts();
+    updateBreadcrumb('all');
+  };
+
+  // ========== LOYALTY POINTS ==========
+  let loyaltyPoints = parseInt(localStorage.getItem('loyaltyPoints')) || 0;
+  const loyaltyPointsSpan = document.getElementById('loyaltyPoints');
+  if (loyaltyPointsSpan) loyaltyPointsSpan.textContent = loyaltyPoints;
+  
+  function addLoyaltyPoints(points) {
+    loyaltyPoints += points;
+    localStorage.setItem('loyaltyPoints', loyaltyPoints);
+    if (loyaltyPointsSpan) loyaltyPointsSpan.textContent = loyaltyPoints;
+    showToast(`✨ +${points} points! Total: ${loyaltyPoints} points`);
+    
+    if (loyaltyPoints >= 100 && loyaltyPoints < 200) {
+      showToast('🎉 Level Silver! 5% discount on next purchase!');
+    } else if (loyaltyPoints >= 200) {
+      showToast('👑 Level Gold! 10% discount + Free shipping!');
+    }
+  }
+  
+  function redeemPoints() {
+    if (loyaltyPoints >= 50) {
+      loyaltyPoints -= 50;
+      localStorage.setItem('loyaltyPoints', loyaltyPoints);
+      if (loyaltyPointsSpan) loyaltyPointsSpan.textContent = loyaltyPoints;
+      showToast('🎁 Redeemed 50 points for RM5 discount code: SAVE5');
+    } else {
+      showToast('Not enough points! Need 50 points to redeem.', true);
+    }
+  }
+  
+  document.getElementById('redeemPointsBtn')?.addEventListener('click', redeemPoints);
+
+  // ========== SEARCH SUGGESTIONS ==========
+  function setupSearchSuggestions() {
+    const searchInput = document.getElementById('searchInput');
+    const suggestionsBox = document.getElementById('searchSuggestions');
+    if (!searchInput || !suggestionsBox) return;
+    
+    searchInput.addEventListener('input', function() {
+      const query = this.value.toLowerCase().trim();
+      if (query.length < 1) {
+        suggestionsBox.style.display = 'none';
+        return;
+      }
+      
+      const suggestions = products.filter(p => p.name.toLowerCase().includes(query)).slice(0, 5);
+      if (suggestions.length === 0) {
+        suggestionsBox.style.display = 'none';
+        return;
+      }
+      
+      suggestionsBox.innerHTML = suggestions.map(p => `
+        <div class="suggestion-item" data-name="${escapeHtml(p.name)}">
+          <i class="fas fa-search"></i>
+          <span>${escapeHtml(p.name)}</span>
+          <small>Rp ${formatPrice(p.priceAfter)}</small>
+        </div>
+      `).join('');
+      
+      suggestionsBox.style.display = 'block';
+      
+      document.querySelectorAll('.suggestion-item').forEach(item => {
+        item.addEventListener('click', () => {
+          searchInput.value = item.dataset.name;
+          suggestionsBox.style.display = 'none';
+          searchQuery = item.dataset.name;
+          renderProducts();
+        });
+      });
+    });
+    
+    document.addEventListener('click', function(e) {
+      if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+        suggestionsBox.style.display = 'none';
+      }
+    });
+  }
+
+  // ========== COOKIE CONSENT - FIX ==========
+  function checkCookieConsent() {
+    const consent = localStorage.getItem('cookieConsent');
+    const cookieBanner = document.getElementById('cookieConsent');
+    
+    if (!cookieBanner) return;
+    
+    if (!consent) {
+      setTimeout(() => {
+        cookieBanner.classList.add('show');
+      }, 1500);
+    } else {
+      cookieBanner.style.display = 'none';
+    }
+  }
+  
+  function hideCookieBanner() {
+    const cookieBanner = document.getElementById('cookieConsent');
+    if (cookieBanner) {
+      cookieBanner.classList.remove('show');
+      setTimeout(() => {
+        cookieBanner.style.display = 'none';
+      }, 400);
+    }
+  }
+  
+  const acceptBtn = document.getElementById('acceptCookies');
+  const declineBtn = document.getElementById('declineCookies');
+  
+  if (acceptBtn) {
+    acceptBtn.addEventListener('click', () => {
+      localStorage.setItem('cookieConsent', 'accepted');
+      hideCookieBanner();
+      showToast('🍪 Terima kasih! Pengalaman anda akan lebih baik.');
+    });
+  }
+  
+  if (declineBtn) {
+    declineBtn.addEventListener('click', () => {
+      localStorage.setItem('cookieConsent', 'declined');
+      hideCookieBanner();
+    });
+  }
+
+  // ========== RENDER PRODUCTS ==========
+  let activeCategory = "all";
+  let searchQuery = "";
+  let currentProduct = null, currentImageIndex = 0;
+
+  function renderProducts() {
+    let filtered = products;
+    if (activeCategory !== "all") filtered = filtered.filter(p => p.category === activeCategory);
+    if (searchQuery.trim() !== "") filtered = filtered.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase().trim()));
+    filtered = sortProducts(filtered, document.getElementById('sortSelect')?.value || 'default');
+    
+    const productCountSpan = document.getElementById('productCount');
+    const resultCountSpan = document.getElementById('resultCountText');
+    const productsContainer = document.getElementById('productsContainer');
+    
+    if (productCountSpan) productCountSpan.textContent = filtered.length;
+    if (resultCountSpan) resultCountSpan.innerHTML = filtered.length === 0 ? '😢 Tiada hasil' : `${filtered.length} produk`;
+    
+    if (filtered.length === 0) {
+      if (productsContainer) productsContainer.innerHTML = `<div class="no-result"><i class="fas fa-tshirt"></i><h3>Produk tidak ditemukan</h3></div>`;
+      return;
+    }
+    
+    if (productsContainer) {
+      productsContainer.innerHTML = filtered.map(product => `
+        <div class="product-card" data-id="${product.id}">
+          <div class="product-badge">-${product.discount}%</div>
+          <button class="wishlist-btn ${wishlist.includes(product.id) ? 'active' : ''}" data-id="${product.id}"><i class="fas fa-heart"></i></button>
+          <div class="product-img"><div class="img-icon">${product.imageIcon}</div></div>
+          <div class="product-info">
+            <div class="product-name">${escapeHtml(product.name)}</div>
+            ${renderRating(product.rating)}
+            <div class="product-price-wrapper">
+              <span class="original-price">Rp ${formatPrice(product.price)}</span>
+              <span class="final-price">Rp ${formatPrice(product.priceAfter)}</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    document.querySelectorAll('.product-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (!e.target.closest('.wishlist-btn')) {
+          const product = products.find(p => p.id === parseInt(card.dataset.id));
+          if (product) { 
+            updateBreadcrumb(activeCategory === 'all' ? 'All Collection' : activeCategory, product.name);
+            openModal(product); 
+            addToRecentlyViewed(product); 
+          }
+        }
+      });
+    });
+    document.querySelectorAll('.wishlist-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => { e.stopPropagation(); toggleWishlist(parseInt(btn.dataset.id)); });
+    });
+  }
+
+  function openModal(product) {
+    currentProduct = product;
+    currentImageIndex = 0;
+    document.getElementById('modalCategory').textContent = product.category;
+    document.getElementById('modalTitle').textContent = product.name;
+    document.getElementById('modalRating').innerHTML = renderRating(product.rating);
+    document.getElementById('modalOriginalPrice').textContent = `Rp ${formatPrice(product.price)}`;
+    document.getElementById('modalFinalPrice').textContent = `Rp ${formatPrice(product.priceAfter)}`;
+    document.getElementById('modalDiscount').textContent = `Diskon ${product.discount}%`;
+    document.getElementById('modalDescription').textContent = product.description;
+    
+    document.getElementById('modalBuyBtn').onclick = () => {
+      addLoyaltyPoints(10);
+      window.open(product.affiliateLink, '_blank');
+    };
+    
+    document.getElementById('shareWhatsapp').onclick = () => shareProduct(product, 'whatsapp');
+    document.getElementById('shareTelegram').onclick = () => shareProduct(product, 'telegram');
+    document.getElementById('shareTiktok').onclick = () => shareProduct(product, 'tiktok');
+    
+    const sliderImages = document.getElementById('sliderImages');
+    sliderImages.innerHTML = '';
+    (product.images || [product.imageIcon]).forEach(img => {
+      const div = document.createElement('div');
+      div.className = 'slide-img';
+      div.innerHTML = `<div class="slide-icon">${img}</div>`;
+      sliderImages.appendChild(div);
+    });
+    
+    const dots = document.getElementById('sliderDots');
+    dots.innerHTML = '';
+    (product.images || [product.imageIcon]).forEach((_, i) => {
+      const dot = document.createElement('span');
+      dot.className = `dot ${i === 0 ? 'active' : ''}`;
+      dot.addEventListener('click', () => goToSlide(i));
+      dots.appendChild(dot);
+    });
+    updateSliderPosition();
+    document.getElementById('productModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+  
+  window.openModalById = (id) => openModal(products.find(p => p.id === id));
+
+  function updateSliderPosition() {
+    const sliderImages = document.getElementById('sliderImages');
+    if (sliderImages) sliderImages.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+    document.querySelectorAll('.dot').forEach((dot, i) => dot.classList.toggle('active', i === currentImageIndex));
+  }
+  
+  function goToSlide(index) { 
+    const totalSlides = document.getElementById('sliderImages')?.children.length || 1;
+    currentImageIndex = Math.min(Math.max(index, 0), totalSlides - 1); 
+    updateSliderPosition(); 
+  }
+  function nextSlide() { goToSlide(currentImageIndex + 1); }
+  function prevSlide() { goToSlide(currentImageIndex - 1); }
+
+  document.getElementById('prevBtn')?.addEventListener('click', prevSlide);
+  document.getElementById('nextBtn')?.addEventListener('click', nextSlide);
+  
+  function closeModalFunc() {
+    document.getElementById('productModal').style.display = 'none'; 
+    document.body.style.overflow = 'auto';
+    updateBreadcrumb(activeCategory === 'all' ? 'All Collection' : activeCategory);
+  }
+  
+  document.querySelector('.close-modal')?.addEventListener('click', closeModalFunc);
+  window.addEventListener('click', (e) => { 
+    if (e.target === document.getElementById('productModal')) closeModalFunc();
+  });
+  document.addEventListener('keydown', (e) => { 
+    if (document.getElementById('productModal').style.display === 'flex') { 
+      if (e.key === 'ArrowLeft') prevSlide(); 
+      else if (e.key === 'ArrowRight') nextSlide(); 
+      else if (e.key === 'Escape') closeModalFunc();
+    } 
+  });
+
+  // ========== SEARCH & FILTER ==========
+  document.getElementById('searchBtn')?.addEventListener('click', () => { 
+    searchQuery = document.getElementById('searchInput').value; 
+    renderProducts(); 
+    updateBreadcrumb(activeCategory === 'all' ? 'All Collection' : activeCategory);
+  });
+  document.getElementById('searchInput')?.addEventListener('keypress', (e) => { 
+    if (e.key === 'Enter') { 
+      searchQuery = e.target.value; 
+      renderProducts(); 
+      updateBreadcrumb(activeCategory === 'all' ? 'All Collection' : activeCategory);
+    } 
+  });
+  document.getElementById('sortSelect')?.addEventListener('change', () => renderProducts());
+  document.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      activeCategory = chip.dataset.cat;
+      renderProducts();
+      updateBreadcrumb(activeCategory === 'all' ? 'All Collection' : activeCategory);
+    });
+  });
+  
+  document.getElementById('wishlistIconBtn')?.addEventListener('click', () => {
+    if (wishlist.length === 0) {
+      showToast('❤️ Wishlist masih kosong', true);
+    } else {
+      showToast(`❤️ ${wishlist.length} produk dalam wishlist`);
+    }
+  });
+
+  // ========== ABOUT MODAL ==========
+  const aboutBtn = document.getElementById('aboutBtn');
+  const aboutModal = document.getElementById('aboutModal');
+  const closeAboutModal = document.querySelector('.close-about-modal');
+  const closeAboutBtn = document.getElementById('closeAboutBtn');
+
+  function openAboutModal() {
+    aboutModal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeAboutModalFunc() {
+    aboutModal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+  }
+
+  aboutBtn?.addEventListener('click', openAboutModal);
+  closeAboutModal?.addEventListener('click', closeAboutModalFunc);
+  closeAboutBtn?.addEventListener('click', closeAboutModalFunc);
+  window.addEventListener('click', (e) => {
+    if (e.target === aboutModal) closeAboutModalFunc();
+  });
+
+  // Clear search button
+  function addClearSearchButton() {
+    const searchBoxDiv = document.querySelector('.search-box');
+    if (!searchBoxDiv) return;
+    const existingClear = document.getElementById('clearSearchIcon');
+    if (existingClear) existingClear.remove();
+    const clearIcon = document.createElement('i');
+    clearIcon.id = 'clearSearchIcon';
+    clearIcon.className = 'fas fa-times-circle clear-icon';
+    clearIcon.style.cursor = 'pointer';
+    clearIcon.title = 'Kosongkan carian';
+    const searchBtnElem = document.getElementById('searchBtn');
+    if (searchBtnElem) searchBoxDiv.insertBefore(clearIcon, searchBtnElem);
+    clearIcon.addEventListener('click', () => {
+      document.getElementById('searchInput').value = '';
+      searchQuery = '';
+      renderProducts();
+      clearIcon.style.display = 'none';
+      document.getElementById('searchInput').focus();
+    });
+    const searchInputElem = document.getElementById('searchInput');
+    searchInputElem.addEventListener('input', function() {
+      clearIcon.style.display = this.value.length > 0 ? 'inline-block' : 'none';
+    });
+    clearIcon.style.display = searchInputElem.value.length > 0 ? 'inline-block' : 'none';
+  }
+
+  // ========== INIT ==========
+  renderProducts();
+  renderRecentlyViewed();
+  addClearSearchButton();
+  setupSearchSuggestions();
+  updateBreadcrumb('all');
+  checkCookieConsent();
+</script>
+</body>
+</html>
